@@ -1,13 +1,7 @@
-import {
-  CubeTexture,
-  Engine,
-  FreeCamera,
-  HemisphericLight,
-  MeshBuilder,
-  Scene,
-  Vector3,
-} from "@babylonjs/core";
-import { skybox } from "./skybox";
+import { Engine, MeshBuilder, Scene } from "@babylonjs/core";
+import { SkyBoxManager } from "./skybox-manager";
+import { CameraManager } from "./camera-manager";
+import { SunManager } from "./sun-manager";
 
 export class SceneManager {
   constructor(
@@ -18,22 +12,12 @@ export class SceneManager {
   createScene = () => {
     // Creates a basic Babylon Scene object
     const scene = new Scene(this.engine);
+    const skyboxManager = new SkyBoxManager();
+    const cameraManager = new CameraManager(scene, this.canvas);
+    const sunManager = new SunManager(scene);
+    const camera = cameraManager.getCamera();
+    scene.createDefaultSkybox(skyboxManager.getSkybox(scene), true, 1000);
 
-    const envTexture = new CubeTexture("assets/skyboxes/skybox", scene, {
-      files: skybox,
-    });
-    scene.createDefaultSkybox(envTexture, true, 1000);
-
-    // Creates and positions a free camera
-    const camera = new FreeCamera("camera1", new Vector3(0, 5, -10), scene);
-    // Targets the camera to scene origin
-    camera.setTarget(Vector3.Zero());
-    // Attaches the camera to the canvas
-    camera.attachControl(this.canvas, true);
-    // Creates a light, aiming 0,1,0
-    const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
-    // Dim the light a small amount 0 - 1
-    light.intensity = 0.7;
     // Built-in 'sphere' shape.
     const sphere = MeshBuilder.CreateSphere(
       "sphere",

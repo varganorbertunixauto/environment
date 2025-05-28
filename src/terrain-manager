@@ -1,0 +1,27 @@
+import { MeshBuilder, Scene, StandardMaterial, Texture } from "@babylonjs/core";
+import terrainHeightmap from "../assets/terrains/terrain_heightmap.png";
+import terrainColormap from "../assets/terrains/terrain_colormap.png";
+
+export class TerrainManager {
+  constructor(private readonly scene: Scene) {}
+
+  createTerrain(): void {
+    const groundMaterial = new StandardMaterial("ground", this.scene);
+    groundMaterial.diffuseTexture = new Texture(terrainColormap, this.scene);
+
+    const ground = MeshBuilder.CreateGroundFromHeightMap(
+      "gdhm",
+      terrainHeightmap,
+      {
+        width: 1024,
+        height: 1024,
+        subdivisions: 1024,
+        maxHeight: 200,
+        minHeight: 0,
+      }
+    );
+
+    // Bind our material to our mesh
+    ground.material = groundMaterial;
+  }
+}
